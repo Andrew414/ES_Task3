@@ -21,13 +21,13 @@ int main(int argc, char *argv[])
 		printf("Enter the command line parameter with file name.\n");
 		return 1;
 	}
-	file_content info = read_file(argv[1]); 
-	printf("%s\n", info.content);
+	file_content information = read_file(argv[1]); 
+	printf("%s\n", information.content);
 	// Defining and initializing socket
-	int sock = 0, connfd = 0;
+	int my_socket = 0, connfd = 0;
 	socketaddress_in server_address; 
 
-	sock = socket(AF_INET, SOCK_STREAM, 0);
+	my_socket = socket(AF_INET, SOCK_STREAM, 0);
 	memset(&server_address, 0, sizeof(server_address));
 
 	server_address.sin_family = AF_INET;
@@ -35,27 +35,27 @@ int main(int argc, char *argv[])
 	server_address.sin_port = htons(5000); 
 
 	// Bind socket to address
-	bind(sock, (SOCKET_ADDRESS*)&server_address, sizeof(server_address)); 
+	bind(my_socket, (SOCKET_ADDRESS*)&server_address, sizeof(server_address)); 
 
-	int i = 5;
+	int count = 5;
 	// Starting server
-	while(i--) {
+	while(count--) {
 		// Start listening socket
-		listen(sock, 10);
+		listen(my_socket, 10);
 
 		//Initializing data for starting sending file in the separate thread
-		my_message mes;
-		mes.file = info.content;
-		mes.size = info.size;
+		my_message message;
+		message.file = information.content;
+		message.size = information.size;
 
 		// Accepting connection and getting connection identifier
-		mes.index = accept(sock, (SOCKET_ADDRESS*)NULL, NULL); 
-		pthread_t thread;
-		pthread_create(&thread, NULL, send_file_to_client, (void*)&mes);
+		message.index = accept(my_socket, (SOCKET_ADDRESS*)NULL, NULL); 
+		pthread_t my_thread;
+		pthread_create(&my_thread, NULL, send_file_to_client, (void*)&message);
 	}
 
 
-	close(sock);
-	free(info.content);
+	close(my_socket);
+	free(information.content);
 	return 0;
 }
