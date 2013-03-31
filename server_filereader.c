@@ -16,21 +16,21 @@ FILE_CONTENT read_file_content(char * file_name, int * error)
     pFile = fopen(file_name, "r");
     if (pFile == NULL) {
         *error = 1;
-  return ans;
+    return ans;
     }
 
     fseek(pFile, 0, SEEK_END);
-    ans.size = ftell(pFile);
+    ans.length = ftell(pFile);
     rewind(pFile);
 
-    ans.content = (char*)calloc(ans.size, sizeof(char));
+    ans.content = (char*)calloc(ans.length, sizeof(char));
     if (ans.content == NULL) {
         *error = 2;
 	return ans;
     }
 
-    result = fread(ans.content, 1, ans.size, pFile);
-    if (result != ans.size) {
+    result = fread(ans.content, 1, ans.length, pFile);
+    if (result != ans.length) {
         *error = 3;
 	return ans;  
     }

@@ -35,12 +35,14 @@ int main(int argc, char * argv[])
 		printf("\n Error: wrong address\n");
 		return 1;
 	} 
+	printf("configurated\n");
 
 	//connecting and handling error
 	if( connect(sockfd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0) {
 		printf("\n Error : Connect Failed \n");
 		return 1;
 	} 
+	printf("connected\n");
 
 	//opening file for writing received data
 	//if((stream = freopen("file.in", "w", stdout)) == NULL) {
@@ -49,12 +51,17 @@ int main(int argc, char * argv[])
 	//}
 
 	//reading data from socket
+	n = read(sockfd, recvBuff, 1);
+	printf("%d\n", n);
 	while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
+		printf("%d received\n", n);
+		printf("%s\n", recvBuff);
 		recvBuff[n] = 0;
 		if(fputs(recvBuff, stdout) == EOF) {
 			printf("\n Error : Fputs error\n");
 		}
 	} 
+	printf("read\n");
 
 	if(n < 0) {
 	printf("\n Read error \n");
