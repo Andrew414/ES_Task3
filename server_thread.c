@@ -9,7 +9,7 @@
 
 #include "server_thread.h"
 
-#define USE_PTHREADS_LUKE
+//#define USE_PTHREADS_LUKE
 
 void* send_file_to_client_pthreads(void * pointer)
 {
@@ -30,7 +30,17 @@ void send_file_to_client(PMESSAGE message)
 	printf("sending - entering\n");
 	pthread_t thread;
     pthread_create(&thread, NULL, send_file_to_client_pthreads, (void*)message);  
+    //send_file_to_client_pthreads( (void*)message ); 
 	printf("sending - leaving\n");
+#else
+    printf("sending - entering\n");
+    pid_t childpid = 0;
+    if (!(childpid=fork())) {
+        send_file_to_client_pthreads( (void*)message );
+        printf("sending - leaving\n");
+        exit(0);
+    }
+    
 #endif
 }
 
@@ -42,5 +52,5 @@ void completion_routine()
 
 void init_routine()
 {
-
+    
 }
