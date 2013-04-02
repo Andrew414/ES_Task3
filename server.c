@@ -12,6 +12,7 @@
 #include "server_thread.h"
 
 typedef struct sockaddr_in SOCKET_ADDRESS, *PSOCKET_ADDRESS;
+typedef struct sockaddr SOCK_ADDR, *PSOCK_ADDR;
 
 int main(int argc, char *argv[])
 {
@@ -47,13 +48,15 @@ int main(int argc, char *argv[])
 	server_address.sin_port = htons(1234); 
 
 	// Bind socket to address
-	bind(my_socket, (SOCKET_ADDRESS*)&server_address, sizeof(server_address)); 
+	bind(my_socket, (PSOCK_ADDR)&server_address, sizeof(server_address)); 
 	init_routine();
 	printf("binded\n");
 	
+    MESSAGE message = {0};
+
 	// Starting server
 	while(1) {
-		MESSAGE message = {0};
+		
 		// Start listening socket
 		listen(my_socket, 10);
 		printf("listening\n");
@@ -64,9 +67,15 @@ int main(int argc, char *argv[])
 		message.size = information.length;
 
 		// Accepting connection and getting connection identifier
-		message.index = accept(my_socket, (PSOCKET_ADDRESS)NULL, NULL); 
-		printf("accepted\n");
-		send_file_to_client(&message);
+		message.index = accept(my_socket, (PSOCK_ADDR)NULL, NULL); 
+		printf("accepted - %d\n", message.index);
+
+        PMESSAGE newMsg = (PMESSAGE) malloc(sizeof(MESSAGE));
+        newMsg->file = message.file;
+        newMsg->size = message.size;
+        newMsg->index = message.index;
+
+		send_file_to_client(newMsg);
 		printf("sent\n");
 	}
 	completion_routine();
